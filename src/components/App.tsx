@@ -2,8 +2,11 @@ import { useEffect, useReducer } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import WelcomeScreen from "./WelcomeScreen";
+import Question from "./Question";
+import NextButton from "./NextButton";
+import Loader from "./Loader";
 
-interface Question {
+export interface Question {
   question: string;
   options: string[];
   correctOption: number;
@@ -13,14 +16,13 @@ interface Question {
 interface AppState {
   questions: Question[];
   status: "loading" | "error" | "ready" | "active" | "finished";
+  currentIndex: number;
+  currentAnswer: number | null;
+  currentPoints: number;
+  highscore: number;
+  secondsRemaining: number | null;
 }
-
-const initialState: AppState = {
-  questions: [],
-  status: "loading",
-};
-
-interface Action {
+export interface Action {
   type:
     | "dataReceived"
     | "dataFailed"
@@ -29,8 +31,18 @@ interface Action {
     | "nextQuestion"
     | "restart"
     | "tick";
-  payload?: Question[];
+  payload?: Question[] | number | string;
 }
+
+const initialState: AppState = {
+  questions: [],
+  status: "loading",
+  currentIndex: 0,
+  currentAnswer: null,
+  currentPoints: 0,
+  highscore: 0,
+  secondsRemaining: null,
+};
 
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -40,16 +52,28 @@ function reducer(state: AppState, action: Action): AppState {
         questions: action.payload!,
         status: "ready",
       };
-
+    case "dataFailed":
+      return { ...state, status: "error" };
+    case "start":
+      return { ...state, status: "active" };
+    case "nextQuestion":
+      return {
+        ...state,
+        currentIndex: state.currentIndex + 1,
+        currentAnswer: null,
+      };
     default:
       return state;
   }
 }
 
 function App() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [{ questions, status, currentIndex }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
 
-  console.log(state);
+  // console.log(state);
 
   useEffect(() => {
     fetch("http://localhost:8000/questions")
@@ -61,10 +85,16 @@ function App() {
   return (
     <div className="app">
       <Header />
-      <WelcomeScreen />
-      <Footer>
-        <h2>Footer</h2>
-      </Footer>
+      <Loader />
+      {status === "ready" && <WelcomeScreen dispatch={dispatch} />}
+      {status === "active" && (
+        <>
+          <Question question={questions[currentIndex]} />
+          <Footer>
+            <NextButton dispatch={dispatch} />
+          </Footer>
+        </>
+      )}
     </div>
   );
 }
