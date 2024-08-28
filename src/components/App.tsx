@@ -5,6 +5,8 @@ import WelcomeScreen from "./WelcomeScreen";
 import Question from "./Question";
 import NextButton from "./NextButton";
 import Loader from "./Loader";
+import Mains from "./Mains";
+import Error from "./Error";
 
 export interface Question {
   question: string;
@@ -85,16 +87,19 @@ function App() {
   return (
     <div className="app">
       <Header />
-      <Loader />
-      {status === "ready" && <WelcomeScreen dispatch={dispatch} />}
-      {status === "active" && (
-        <>
-          <Question question={questions[currentIndex]} />
-          <Footer>
-            <NextButton dispatch={dispatch} />
-          </Footer>
-        </>
-      )}
+      <Mains>
+        {status === "loading" && <Loader />}
+        {status === "error" && <Error />}
+        {status === "ready" && <WelcomeScreen dispatch={dispatch} />}
+        {status === "active" && (
+          <>
+            <Question question={questions[currentIndex]} />
+            <Footer>
+              <NextButton dispatch={dispatch} />
+            </Footer>
+          </>
+        )}
+      </Mains>
     </div>
   );
 }

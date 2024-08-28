@@ -38,7 +38,7 @@ body {
 }
 
 .main {
-  width: 50rem;
+  width: 60rem;
 }
 
 .app-header {
@@ -51,6 +51,15 @@ body {
 
 .react-logo {
   width: 14rem;
+}
+
+.error {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  padding: 2rem;
+  background-color: var(--color-dark);
+  border-radius: 200px;
 }
 
 h1 {
