@@ -7,6 +7,7 @@ import NextButton from "./NextButton";
 import Loader from "./Loader";
 import Mains from "./Mains";
 import Error from "./Error";
+import Progress from "./Progress";
 
 export interface Question {
   question: string;
@@ -70,12 +71,15 @@ function reducer(state: AppState, action: Action): AppState {
 }
 
 function App() {
-  const [{ questions, status, currentIndex }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  const [
+    { questions, status, currentIndex, currentAnswer, currentPoints },
+    dispatch,
+  ] = useReducer(reducer, initialState);
 
-  // console.log(state);
+  const maxPoints = questions.reduce(
+    (acc, question) => acc + question.points,
+    0
+  );
 
   useEffect(() => {
     fetch("http://localhost:8000/questions")
@@ -93,6 +97,13 @@ function App() {
         {status === "ready" && <WelcomeScreen dispatch={dispatch} />}
         {status === "active" && (
           <>
+            <Progress
+              currentIndex={currentIndex}
+              currentAnswer={currentAnswer}
+              currentPoint={currentPoints}
+              maxPoints={maxPoints}
+              numQuestions={questions.length}
+            />
             <Question question={questions[currentIndex]} />
             <Footer>
               <NextButton dispatch={dispatch} />
