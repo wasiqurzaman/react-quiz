@@ -50,7 +50,7 @@ const initialState: AppState = {
   secondsRemaining: null,
 };
 
-const SECONDS_PER_QUESTION = 2;
+const SECONDS_PER_QUESTION = 20;
 
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -133,10 +133,20 @@ function App() {
     0
   );
 
+  // useEffect(() => {
+  //   fetch("http://localhost:8000/questions")
+  //     .then(res => res.json())
+  //     .then(data => dispatch({ type: "dataReceived", payload: data }))
+  //     .catch(error => dispatch({ type: "dataFailed" }));
+  // }, []);
+
   useEffect(() => {
-    fetch("http://localhost:8000/questions")
+    fetch("../../data/questions.json")
       .then(res => res.json())
-      .then(data => dispatch({ type: "dataReceived", payload: data }))
+      .then(data => {
+        console.log(data);
+        dispatch({ type: "dataReceived", payload: data.questions });
+      })
       .catch(error => dispatch({ type: "dataFailed" }));
   }, []);
 
