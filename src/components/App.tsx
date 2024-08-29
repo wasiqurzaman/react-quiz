@@ -9,6 +9,7 @@ import Mains from "./Mains";
 import Error from "./Error";
 import Progress from "./Progress";
 import FinishedScreen from "./FinishedScreen";
+import Timer from "./Timer";
 
 export interface Question {
   question: string;
@@ -35,7 +36,7 @@ export interface Action {
     | "nextQuestion"
     | "finish"
     | "restart"
-    | "tick";
+    | "timerTick";
   payload?: Question[] | number | string;
 }
 
@@ -49,6 +50,8 @@ const initialState: AppState = {
   secondsRemaining: null,
 };
 
+const SECONDS_PER_QUESTION = 2;
+
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case "dataReceived":
@@ -60,7 +63,11 @@ function reducer(state: AppState, action: Action): AppState {
     case "dataFailed":
       return { ...state, status: "error" };
     case "start":
-      return { ...state, status: "active" };
+      return {
+        ...state,
+        status: "active",
+        secondsRemaining: state.questions.length * SECONDS_PER_QUESTION,
+      };
     case "newAnswer":
       // eslint-disable-next-line no-case-declarations
       const question = state.questions.at(state.currentIndex);
@@ -94,6 +101,13 @@ function reducer(state: AppState, action: Action): AppState {
         highscore: state.highscore,
         status: "ready",
       };
+
+    case "timerTick":
+      return {
+        ...state,
+        secondsRemaining: state.secondsRemaining - 1,
+        status: state.secondsRemaining <= 0 ? "finished" : state.status,
+      };
     default:
       return state;
   }
@@ -108,6 +122,7 @@ function App() {
       currentAnswer,
       currentPoints,
       highscore,
+      secondsRemaining,
     },
     dispatch,
   ] = useReducer(reducer, initialState);
@@ -147,6 +162,7 @@ function App() {
               answer={currentAnswer}
             />
             <Footer>
+              <Timer secondsRemaining={secondsRemaining} dispatch={dispatch} />
               <NextButton
                 dispatch={dispatch}
                 currentAnswer={currentAnswer}

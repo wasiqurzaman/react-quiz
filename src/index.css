@@ -195,6 +195,15 @@ progress {
   margin-bottom: 5rem;
 }
 
+.timer {
+  float: left;
+  font-size: 3rem;
+  color: var(--color-medium);
+  border: 2px solid var(--color-dark);
+  padding: 1.4rem 2.8rem;
+  border-radius: 200px;
+}
+
 .loader-container {
   display: flex;
   flex-direction: column;
