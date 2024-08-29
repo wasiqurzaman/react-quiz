@@ -60,6 +60,17 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, status: "error" };
     case "start":
       return { ...state, status: "active" };
+    case "newAnswer":
+      // eslint-disable-next-line no-case-declarations
+      const question = state.questions.at(state.currentIndex);
+      return {
+        ...state,
+        currentAnswer: action.payload,
+        currentPoints:
+          action.payload === question.correctOption
+            ? state.currentPoints + question.points
+            : state.currentPoints,
+      };
     case "nextQuestion":
       return {
         ...state,
@@ -77,6 +88,7 @@ function App() {
     dispatch,
   ] = useReducer(reducer, initialState);
 
+  const numQuestions = questions.length;
   const maxPoints = questions.reduce(
     (acc, question) => acc + question.points,
     0
@@ -103,11 +115,20 @@ function App() {
               currentAnswer={currentAnswer}
               currentPoint={currentPoints}
               maxPoints={maxPoints}
-              numQuestions={questions.length}
+              numQuestions={numQuestions}
             />
-            <Question question={questions[currentIndex]} />
+            <Question
+              question={questions[currentIndex]}
+              dispatch={dispatch}
+              answer={currentAnswer}
+            />
             <Footer>
-              <NextButton dispatch={dispatch} />
+              <NextButton
+                dispatch={dispatch}
+                currentAnswer={currentAnswer}
+                currentIndex={currentIndex}
+                numQuestions={numQuestions}
+              />
             </Footer>
           </>
         )}
