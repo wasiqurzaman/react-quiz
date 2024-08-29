@@ -8,6 +8,7 @@ import Loader from "./Loader";
 import Mains from "./Mains";
 import Error from "./Error";
 import Progress from "./Progress";
+import FinishedScreen from "./FinishedScreen";
 
 export interface Question {
   question: string;
@@ -65,7 +66,7 @@ function reducer(state: AppState, action: Action): AppState {
       const question = state.questions.at(state.currentIndex);
       return {
         ...state,
-        currentAnswer: action.payload,
+        currentAnswer: action.payload!,
         currentPoints:
           action.payload === question.correctOption
             ? state.currentPoints + question.points
@@ -77,6 +78,22 @@ function reducer(state: AppState, action: Action): AppState {
         currentIndex: state.currentIndex + 1,
         currentAnswer: null,
       };
+    case "finish":
+      return {
+        ...state,
+        status: "finished",
+        highscore:
+          state.currentPoints > state.highscore
+            ? state.currentPoints
+            : state.highscore,
+      };
+    case "restart":
+      return {
+        ...initialState,
+        questions: state.questions,
+        highscore: state.highscore,
+        status: "ready",
+      };
     default:
       return state;
   }
@@ -84,7 +101,14 @@ function reducer(state: AppState, action: Action): AppState {
 
 function App() {
   const [
-    { questions, status, currentIndex, currentAnswer, currentPoints },
+    {
+      questions,
+      status,
+      currentIndex,
+      currentAnswer,
+      currentPoints,
+      highscore,
+    },
     dispatch,
   ] = useReducer(reducer, initialState);
 
@@ -131,6 +155,14 @@ function App() {
               />
             </Footer>
           </>
+        )}
+        {status === "finished" && (
+          <FinishedScreen
+            points={currentPoints}
+            maxPoints={maxPoints}
+            highscore={highscore}
+            dispatch={dispatch}
+          />
         )}
       </Mains>
     </div>
