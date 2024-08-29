@@ -32,6 +32,7 @@ export interface Action {
     | "start"
     | "newAnswer"
     | "nextQuestion"
+    | "finish"
     | "restart"
     | "tick";
   payload?: Question[] | number | string;
