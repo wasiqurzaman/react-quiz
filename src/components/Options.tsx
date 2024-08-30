@@ -22,7 +22,7 @@ const Options = ({ question, dispatch, answer }: Props) => {
           }`}
           key={option}
           disabled={hasAnswered}
-          onClick={() => dispatch({ type: "newAnswer", payload: index })}
+          onClick={() => dispatch({ type: "newAnswer", payload2: index })}
         >
           {option}
         </button>

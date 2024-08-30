@@ -11,6 +11,8 @@ import Progress from "./Progress";
 import FinishedScreen from "./FinishedScreen";
 import Timer from "./Timer";
 
+import { questions as Questions } from "../../data/questions";
+
 export interface Question {
   question: string;
   options: string[];
@@ -25,9 +27,9 @@ interface AppState {
   currentAnswer: number | null;
   currentPoints: number;
   highscore: number;
-  secondsRemaining: number | null;
+  secondsRemaining: number;
 }
-export interface Action {
+export type Action = {
   type:
     | "dataReceived"
     | "dataFailed"
@@ -37,8 +39,9 @@ export interface Action {
     | "finish"
     | "restart"
     | "timerTick";
-  payload?: Question[] | number | string;
-}
+  payload1?: Question[];
+  payload2?: number;
+};
 
 const initialState: AppState = {
   questions: [],
@@ -47,7 +50,7 @@ const initialState: AppState = {
   currentAnswer: null,
   currentPoints: 0,
   highscore: 0,
-  secondsRemaining: null,
+  secondsRemaining: 300,
 };
 
 const SECONDS_PER_QUESTION = 20;
@@ -57,7 +60,7 @@ function reducer(state: AppState, action: Action): AppState {
     case "dataReceived":
       return {
         ...state,
-        questions: action.payload!,
+        questions: action.payload1!,
         status: "ready",
       };
     case "dataFailed":
@@ -70,12 +73,12 @@ function reducer(state: AppState, action: Action): AppState {
       };
     case "newAnswer":
       // eslint-disable-next-line no-case-declarations
-      const question = state.questions.at(state.currentIndex);
+      const question = state.questions[state.currentIndex];
       return {
         ...state,
-        currentAnswer: action.payload!,
+        currentAnswer: action.payload2!,
         currentPoints:
-          action.payload === question.correctOption
+          action.payload2 === question.correctOption
             ? state.currentPoints + question.points
             : state.currentPoints,
       };
@@ -140,15 +143,14 @@ function App() {
   //     .catch(error => dispatch({ type: "dataFailed" }));
   // }, []);
 
+  // console.log(Questions);
+
   useEffect(() => {
-    fetch("../../data/questions.json")
-      .then(res => res.json())
-      .then(data => {
-        console.log(data);
-        dispatch({ type: "dataReceived", payload: data.questions });
-      })
-      .catch(error => dispatch({ type: "dataFailed" }));
-  }, []);
+    dispatch({
+      type: "dataReceived",
+      payload1: Questions,
+    });
+  }, [questions]);
 
   return (
     <div className="app">
