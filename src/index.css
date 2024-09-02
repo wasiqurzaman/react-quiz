@@ -242,3 +242,53 @@ progress {
     background-position: 0% 50%, 50% 50%, 100% 100%;
   }
 }
+
+/* media queries */
+
+@media screen and (max-width: 480px) {
+  .app-header {
+    width: 40rem;
+  }
+  .main {
+    width: 30rem;
+  }
+
+  .react-logo {
+    width: 8rem;
+  }
+
+  h1 {
+    font-size: 4rem;
+  }
+  h2 {
+    font-size: 3.2rem;
+  }
+  h3 {
+    font-size: 2rem;
+  }
+  h4 {
+    font-size: 1.8rem;
+  }
+  .btn {
+    font-size: 2rem;
+  }
+  .progress p {
+    font-size: 1.4rem;
+  }
+  strong {
+    font-size: 1.4rem;
+  }
+}
+
+/* @media screen and (max-width: 600px) {
+  .app-header {
+    width: 40rem;
+  }
+  .main {
+    width: 30rem;
+  }
+
+  .react-logo {
+    width: 8rem;
+  }
+} */
